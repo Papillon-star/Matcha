@@ -48,22 +48,23 @@ def prepare_sms_messages(pairs):
             message_1 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
             }
             message_2 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
             }
             messages.extend([message_1, message_2])
         elif len(pair) == 3:  # Group of three students
             message_1 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you'll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
             }
             messages.append(message_1)
     return messages
+
 
 # Authenticate and connect to Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
