@@ -3,15 +3,19 @@ from oauth2client.service_account import ServiceAccountCredentials
 import telnyx
 import pandas as pd
 import os
+
 # Set your Telnyx API key
 telnyx.api_key = "***REMOVED***"
+
 # Define your sender phone number
 sender_phone_number = "+12364848188"
+
 # Function to format phone numbers to include country code
 def format_phone_number(phone_number, country_code="+1"):
     if not phone_number.startswith("+"):
         phone_number = country_code + phone_number
     return phone_number
+
 # Function to send SMS using Telnyx API
 def send_sms(message):
     try:
@@ -30,17 +34,44 @@ def send_sms(message):
         else:
             print("Unexpected response structure, could not find status.")
             return "unknown"
-        
+     
     except telnyx.error.InvalidRequestError as e:
         print(f"Failed to send message to {message['recipient']}: {e}")
         print(f"Full details: {e.errors}")
         return None
+
+# Function to prepare SMS messages
+def prepare_sms_messages(pairs):
+    messages = []
+    for pair in pairs:
+        if len(pair) == 2:  # Pair of two students
+            message_1 = {
+                'sender': sender_phone_number,
+                'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+            }
+            message_2 = {
+                'sender': sender_phone_number,
+                'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
+                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+            }
+            messages.extend([message_1, message_2])
+        elif len(pair) == 3:  # Group of three students
+            message_1 = {
+                'sender': sender_phone_number,
+                'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you'll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you'll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+            }
+            messages.append(message_1)
+    return messages
+
 # Authenticate and connect to Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
 client = gspread.authorize(creds)
 sheet = client.open("Matcha Aug26 Responses").sheet1
-# Define unique expected headers (modify these according to your sheet)
+
+# Define unique expected headers
 expected_headers = [
     "Timestamp", "First Name", "Year Group", 
     "Phone Number (you'll get matched by text on Friday!)", "Any Feedback?", "Matched"
@@ -49,9 +80,11 @@ expected_headers = [
 # Retrieve data using expected_headers
 data = sheet.get_all_records(expected_headers=expected_headers)
 df = pd.DataFrame(data)
+
 # Ensure the "Matched" column exists in the DataFrame
 if 'Matched' not in df.columns:
     df['Matched'] = 'No'
+
 # Filter out people who have already been matched
 df = df[df['Matched'].str.lower() != 'yes']
 # Check if the DataFrame is empty
