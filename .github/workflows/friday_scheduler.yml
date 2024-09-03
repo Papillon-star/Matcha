@@ -2,7 +2,8 @@ name: Weekly SMS Job
 
 on:
   schedule:
-    - cron: '0 9 * * 5'  # This cron expression runs the job every Friday at 09:00 UTC
+    - cron: '0 18 * * 5'  # Every Friday at 18:00 UTC (10:00 AM PST)
+  workflow_dispatch:  # This allows you to manually trigger the workflow
 
 jobs:
   run-script:
