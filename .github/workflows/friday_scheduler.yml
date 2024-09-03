@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install gspread oauth2client telnyx
+        pip install gspread oauth2client telnyx pandas
 
     - name: Run script
       run: |
