@@ -37,7 +37,7 @@ def send_sms(message):
         return None
 # Authenticate and connect to Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('matcha-aug26-4ff2f9ef6f54.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
 client = gspread.authorize(creds)
 sheet = client.open("Matcha Aug26 Responses").sheet1
 # Define unique expected headers (modify these according to your sheet)
