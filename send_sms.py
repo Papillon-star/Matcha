@@ -12,6 +12,7 @@ sender_phone_number = "+12364848188"
 
 # Function to format phone numbers to include country code
 def format_phone_number(phone_number, country_code="+1"):
+    phone_number = str(phone_number)  # Convert to string if not already
     if not phone_number.startswith("+"):
         phone_number = country_code + phone_number
     return phone_number
