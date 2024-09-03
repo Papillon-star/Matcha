@@ -1,0 +1,26 @@
+name: Weekly SMS Job
+
+on:
+  schedule:
+    - cron: '0 9 * * 5'  # This cron expression runs the job every Friday at 09:00 UTC
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install gspread oauth2client telnyx
+
+    - name: Run script
+      run: |
+        python send_sms.py
