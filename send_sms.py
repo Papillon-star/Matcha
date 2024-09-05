@@ -14,8 +14,7 @@ sender_phone_number = "+12364848188"
 # Function to format phone numbers to include country code
 def format_phone_number(phone_number, country_code="+1"):
     phone_number = str(phone_number)  # Convert to string if not already
-    # Remove common delimiters such as spaces, dashes, and parentheses
-    phone_number = re.sub(r"[^\d]", "", phone_number)
+    phone_number = re.sub(r"[^\d]", "", phone_number)  # Remove delimiters
     if not phone_number.startswith("+"):
         phone_number = country_code + phone_number
     return phone_number
@@ -30,15 +29,12 @@ def send_sms(message):
         )
         print(f"Message sent to {message['recipient']}")
         print(response)
-
-        # Check if the response contains the expected data
         if 'to' in response and response['to'][0]['status']:
             print(f"Message status: {response['to'][0]['status']}")
             return response['to'][0]['status']
         else:
             print("Unexpected response structure, could not find status.")
             return "unknown"
-     
     except telnyx.error.InvalidRequestError as e:
         print(f"Failed to send message to {message['recipient']}: {e}")
         print(f"Full details: {e.errors}")
@@ -46,28 +42,20 @@ def send_sms(message):
 
 # Function to prepare SMS messages
 def prepare_sms_messages(pairs):
-    form_link = "https://forms.gle/UQbWiWj8j5mf6KzNA"  # Your Google Forms link
+    form_link = "https://forms.gle/UQbWiWj8j5mf6KzNA"
     messages = []
     for pair in pairs:
-        if len(pair) == 2:  # Pair of two students
-            message_1 = {
-                'sender': sender_phone_number,
-                'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
-            }
-            message_2 = {
-                'sender': sender_phone_number,
-                'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
-            }
-            messages.extend([message_1, message_2])
-        elif len(pair) == 3:  # Group of three students
-            message_1 = {
-                'sender': sender_phone_number,
-                'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
-            }
-            messages.append(message_1)
+        message_1 = {
+            'sender': sender_phone_number,
+            'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
+            'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
+        }
+        message_2 = {
+            'sender': sender_phone_number,
+            'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
+            'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
+        }
+        messages.extend([message_1, message_2])
     return messages
 
 # Authenticate and connect to Google Sheets
@@ -92,6 +80,7 @@ if 'Matched' not in df.columns:
 
 # Filter out people who have already been matched
 df = df[df['Matched'].str.lower() != 'yes']
+
 # Check if the DataFrame is empty
 if df.empty:
     print("No unmatched students available.")
@@ -105,7 +94,7 @@ else:
 
     pairs = []
 
-    # Function to pair students and handle groups of three if necessary
+    # Function to pair students and handle remainders
     def pair_students_and_handle_remainders(group):
         paired = []
         for i in range(0, len(group) - 1, 2):
@@ -117,31 +106,26 @@ else:
     paired_1_2 = pair_students_and_handle_remainders(group_1_2)
     paired_3_4_plus = pair_students_and_handle_remainders(group_3_4_plus)
 
-   # Handle leftover students
-leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
-leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
+    # Handle leftover students
+    leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
+    leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
 
-# Pair leftover students across groups if both groups have leftovers
-while not leftover_1_2.empty and not leftover_3_4_plus.empty:
-    pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
-    leftover_1_2 = leftover_1_2.iloc[1:]
-    leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
+    # Pair leftover students across groups if both groups have leftovers
+    while not leftover_1_2.empty and not leftover_3_4_plus.empty:
+        pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
+        leftover_1_2 = leftover_1_2.iloc[1:]
+        leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
 
-# If any students are still unpaired, try to form a group of three
-unpaired = pd.concat([leftover_1_2, leftover_3_4_plus])
+    # If any students are still unpaired, match them with 'Sophia'
+    unpaired = pd.concat([leftover_1_2, leftover_3_4_plus])
 
-# This is where you should place the updated logic:
-if len(unpaired) == 1:
-    print(f"{unpaired.iloc[0]['First Name']} is left unmatched.")
-    # Don't mark them as matched
-else:
-    if len(unpaired) == 3:
-        pairs.append((unpaired.iloc[0], unpaired.iloc[1], unpaired.iloc[2]))
-    elif len(unpaired) == 2:
-        pairs.append((unpaired.iloc[0], unpaired.iloc[1]))
-    elif len(unpaired) == 1:
-        if pairs:
-            pairs[-1] = pairs[-1] + (unpaired.iloc[0],)
+    if not unpaired.empty:
+        sophia = {
+            'First Name': 'Sophia',
+            'Phone Number (you\'ll get matched by text on Friday!)': '2369781211'
+        }
+        print(f"Matching {unpaired.iloc[0]['First Name']} with Sophia.")
+        pairs.append((unpaired.iloc[0], sophia))
 
     # Prepare and send SMS messages
     messages = prepare_sms_messages(pairs)
@@ -150,10 +134,5 @@ else:
     
     # Mark matched students in the Google Sheet
     for pair in pairs:
-        if len(pair) == 2:  # Pair of two students
-            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-            sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-        elif len(pair) == 3:  # Group of three students
-            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-            sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-            sheet.update_cell(pair[2].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+        sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+        sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
