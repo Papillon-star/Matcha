@@ -117,18 +117,24 @@ else:
     paired_1_2 = pair_students_and_handle_remainders(group_1_2)
     paired_3_4_plus = pair_students_and_handle_remainders(group_3_4_plus)
 
-    # Handle leftover students
-    leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
-    leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
+   # Handle leftover students
+leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
+leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
 
-    # Pair leftover students across groups if both groups have leftovers
-    while not leftover_1_2.empty and not leftover_3_4_plus.empty:
-        pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
-        leftover_1_2 = leftover_1_2.iloc[1:]
-        leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
+# Pair leftover students across groups if both groups have leftovers
+while not leftover_1_2.empty and not leftover_3_4_plus.empty:
+    pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
+    leftover_1_2 = leftover_1_2.iloc[1:]
+    leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
 
-    # If any students are still unpaired, try to form a group of three
-    unpaired = pd.concat([leftover_1_2, leftover_3_4_plus])
+# If any students are still unpaired, try to form a group of three
+unpaired = pd.concat([leftover_1_2, leftover_3_4_plus])
+
+# This is where you should place the updated logic:
+if len(unpaired) == 1:
+    print(f"{unpaired.iloc[0]['First Name']} is left unmatched.")
+    # Don't mark them as matched
+else:
     if len(unpaired) == 3:
         pairs.append((unpaired.iloc[0], unpaired.iloc[1], unpaired.iloc[2]))
     elif len(unpaired) == 2:
