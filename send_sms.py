@@ -99,7 +99,7 @@ else:
         paired = []
         for i in range(0, len(group) - 1, 2):
             pairs.append((group.iloc[i], group.iloc[i + 1]))
-            paired.extend([group.iloc[i]['First Name'], group.iloc[i + 1]['First Name']])
+            paired.extend([group.index[i], group.index[i + 1]])  # Store indexes for updating
         return paired
 
     # Initial pairing within the same year group
@@ -107,12 +107,14 @@ else:
     paired_3_4_plus = pair_students_and_handle_remainders(group_3_4_plus)
 
     # Handle leftover students
-    leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
-    leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
+    leftover_1_2 = group_1_2[~group_1_2.index.isin(paired_1_2)]
+    leftover_3_4_plus = group_3_4_plus[~group_3_4_plus.index.isin(paired_3_4_plus)]
 
     # Pair leftover students across groups if both groups have leftovers
     while not leftover_1_2.empty and not leftover_3_4_plus.empty:
         pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
+        paired_1_2.append(leftover_1_2.index[0])
+        paired_3_4_plus.append(leftover_3_4_plus.index[0])
         leftover_1_2 = leftover_1_2.iloc[1:]
         leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
 
@@ -134,5 +136,8 @@ else:
     
     # Mark matched students in the Google Sheet
     for pair in pairs:
-        sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-        sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+        if isinstance(pair[1], pd.Series):  # This checks if the second person is a DataFrame row (not Sophia)
+            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+            sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+        else:  # If the second person is Sophia, update only the student
+            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
