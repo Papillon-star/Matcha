@@ -105,8 +105,8 @@ else:
 
     pairs = []
 
-    # Pair within the same group
-    def pair_students(group):
+    # Function to pair students and handle groups of three if necessary
+    def pair_students_and_handle_remainders(group):
         paired = []
         for i in range(0, len(group) - 1, 2):
             pairs.append((group.iloc[i], group.iloc[i + 1]))
@@ -114,23 +114,28 @@ else:
         return paired
 
     # Initial pairing within the same year group
-    paired_1_2 = pair_students(group_1_2)
-    paired_3_4_plus = pair_students(group_3_4_plus)
+    paired_1_2 = pair_students_and_handle_remainders(group_1_2)
+    paired_3_4_plus = pair_students_and_handle_remainders(group_3_4_plus)
 
     # Handle leftover students
     leftover_1_2 = group_1_2[~group_1_2['First Name'].isin(paired_1_2)]
     leftover_3_4_plus = group_3_4_plus[~group_3_4_plus['First Name'].isin(paired_3_4_plus)]
 
-    # Pair leftover students across groups
-    for i in range(min(len(leftover_1_2), len(leftover_3_4_plus))):
-        pairs.append((leftover_1_2.iloc[i], leftover_3_4_plus.iloc[i]))
+    # Pair leftover students across groups if both groups have leftovers
+    while not leftover_1_2.empty and not leftover_3_4_plus.empty:
+        pairs.append((leftover_1_2.iloc[0], leftover_3_4_plus.iloc[0]))
+        leftover_1_2 = leftover_1_2.iloc[1:]
+        leftover_3_4_plus = leftover_3_4_plus.iloc[1:]
 
-    # Check for remaining unpaired students
-    unpaired = leftover_1_2[len(leftover_3_4_plus):] if len(leftover_1_2) > len(leftover_3_4_plus) else leftover_3_4_plus[len(leftover_1_2):]
-
-    # Form groups of three if necessary
-    if len(unpaired) >= 3:
-        pairs.append((unpaired.iloc[0], unpaired.iloc[1], unpaired.iloc[2]))  # Adjust if necessary
+    # If any students are still unpaired, try to form a group of three
+    unpaired = pd.concat([leftover_1_2, leftover_3_4_plus])
+    if len(unpaired) == 3:
+        pairs.append((unpaired.iloc[0], unpaired.iloc[1], unpaired.iloc[2]))
+    elif len(unpaired) == 2:
+        pairs.append((unpaired.iloc[0], unpaired.iloc[1]))
+    elif len(unpaired) == 1:
+        if pairs:
+            pairs[-1] = pairs[-1] + (unpaired.iloc[0],)
 
     # Prepare and send SMS messages
     messages = prepare_sms_messages(pairs)
