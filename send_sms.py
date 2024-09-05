@@ -3,6 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import telnyx
 import pandas as pd
 import os
+import re
 
 # Set your Telnyx API key
 telnyx.api_key = "***REMOVED***"
@@ -13,6 +14,8 @@ sender_phone_number = "+12364848188"
 # Function to format phone numbers to include country code
 def format_phone_number(phone_number, country_code="+1"):
     phone_number = str(phone_number)  # Convert to string if not already
+    # Remove common delimiters such as spaces, dashes, and parentheses
+    phone_number = re.sub(r"[^\d]", "", phone_number)
     if not phone_number.startswith("+"):
         phone_number = country_code + phone_number
     return phone_number
@@ -43,29 +46,29 @@ def send_sms(message):
 
 # Function to prepare SMS messages
 def prepare_sms_messages(pairs):
+    form_link = "https://forms.gle/UQbWiWj8j5mf6KzNA"  # Your Google Forms link
     messages = []
     for pair in pairs:
         if len(pair) == 2:  # Pair of two students
             message_1 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
             }
             message_2 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
             }
             messages.extend([message_1, message_2])
         elif len(pair) == 3:  # Group of three students
             message_1 = {
                 'sender': sender_phone_number,
                 'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again :)"
+                'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']} and {pair[2]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}, {format_phone_number(pair[2]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
             }
             messages.append(message_1)
     return messages
-
 
 # Authenticate and connect to Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
