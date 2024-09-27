@@ -48,12 +48,16 @@ def prepare_sms_messages(pairs):
         message_1 = {
             'sender': sender_phone_number,
             'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-            'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
+            'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}.\n"
+            f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'!\n"
+            f"Meet someone new by filling out the Matcha form again: {form_link} :)"
         }
         message_2 = {
             'sender': sender_phone_number,
             'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
-            'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}. Meet someone new by filling out the Matcha form again: {form_link} :)"
+            'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}.\n"
+            f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'!\n"
+            f"Meet someone new by filling out the Matcha form again: {form_link} :)"
         }
         messages.extend([message_1, message_2])
     return messages
@@ -62,7 +66,7 @@ def prepare_sms_messages(pairs):
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
 client = gspread.authorize(creds)
-sheet = client.open("Matcha Aug26 Responses").sheet1
+sheet = client.open("TEST Matcha Responses").sheet1
 
 # Define unique expected headers
 expected_headers = [
