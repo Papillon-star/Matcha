@@ -66,7 +66,7 @@ def prepare_sms_messages(pairs):
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
 client = gspread.authorize(creds)
-sheet = client.open("Matcha Aug26 Responses").sheet1
+sheet = client.open("TEST Matcha Responses").sheet1
 
 # Define unique expected headers
 expected_headers = [
