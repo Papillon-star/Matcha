@@ -1,8 +1,8 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import pandas as pd
-import random
 import telnyx
+import pandas as pd
+import os
 import re
 
 # Set your Telnyx API key
@@ -28,6 +28,7 @@ def send_sms(message):
             text=message['content']
         )
         print(f"Message sent to {message['recipient']}")
+        print(response)
         if 'to' in response and response['to'][0]['status']:
             print(f"Message status: {response['to'][0]['status']}")
             return response['to'][0]['status']
@@ -48,140 +49,120 @@ def prepare_sms_messages(pairs):
             'sender': sender_phone_number,
             'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
             'content': f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number (you\'ll get matched by text on Friday!)'])}.\n\n"
-                       f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
-                       f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+            f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
+            f"Meet someone new by filling out the Matcha form again: {form_link} :)"
         }
         message_2 = {
             'sender': sender_phone_number,
             'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
             'content': f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number (you\'ll get matched by text on Friday!)'])}.\n\n"
-                       f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
-                       f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+            f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
+            f"Meet someone new by filling out the Matcha form again: {form_link} :)"
         }
         messages.extend([message_1, message_2])
     return messages
 
 # Authenticate and connect to Google Sheets
-def connect_to_google_sheets(sheet_name="Matcha Aug26 Responses"):
-    """
-    Connects to the specified Google Sheet and returns the sheet object and DataFrame.
-    """
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
-    client = gspread.authorize(creds)
-    sheet = client.open(sheet_name).sheet1
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
+client = gspread.authorize(creds)
+sheet = client.open("Matcha Aug26 Responses").sheet1
 
-    # Define expected headers to ensure consistency
-    expected_headers = [
-        "Timestamp", "First Name", "Gender", "Gender Preference",
-        "Phone Number (you'll get matched by text on Friday!)", "Paid", "Matched"
-    ]
+# Define unique expected headers
+expected_headers = [
+    "Timestamp", "First Name", "Year Group", 
+    "Phone Number (you'll get matched by text on Friday!)", "Paid", "Matched", 
+    "Your gender", "Your match's gender"
+]
 
-    # Load the sheet data into a DataFrame with expected headers
-    data = sheet.get_all_records(expected_headers=expected_headers)
-    df = pd.DataFrame(data)
-    return df, sheet
+# Retrieve data using expected_headers
+data = sheet.get_all_records(expected_headers=expected_headers)
+df = pd.DataFrame(data)
 
-# Function to find gender-specific matches for paid users
-def find_gender_matches(df):
-    """
-    Finds gender-specific matches for users marked as 'Paid' and not 'Matched'.
-    
-    Args:
-        df (DataFrame): The DataFrame containing user data.
+# Ensure the "Matched" column exists in the DataFrame
+if 'Matched' not in df.columns:
+    df['Matched'] = 'No'
 
-    Returns:
-        List of tuples representing matched pairs and the updated DataFrame.
-    """
-    paid_users = df[(df['Paid'].str.lower() == 'yes') & (df['Matched'].str.lower() != 'yes')]
-    matches = []
+# Filter out people who have already been matched
+df = df[df['Matched'].str.lower() != 'yes']
 
-    for index, user in paid_users.iterrows():
-        if user['Matched'].lower() == 'yes':
-            continue
-        
-        # Find potential matches based on gender preference
-        potential_matches = paid_users[
-            (paid_users['Gender'].str.lower() == user['Gender Preference'].strip().lower()) &
-            (paid_users['Gender Preference'].str.lower() == user['Gender'].strip().lower()) &
-            (paid_users.index != index)
-        ]
+# Check if the DataFrame is empty
+if df.empty:
+    print("No unmatched students available.")
+else:
+    print("Data loaded successfully!")
+    print(df.head())  # Display the first few rows if data is available
 
-        if not potential_matches.empty:
-            match = potential_matches.iloc[0]
-            matches.append((user, match))
-            df.at[index, 'Matched'] = 'Yes'
-            df.at[match.name, 'Matched'] = 'Yes'
-        else:
-            # Check if user can be matched with Sophia if they want a female
-            if user['Gender Preference'].strip().lower() == 'female':
-                sophia = {
-                    'First Name': 'Sophia',
-                    'Gender': 'female',
-                    'Gender Preference': 'N/A',
-                    'Paid': 'N/A',
-                    'Matched': 'N/A',
-                    'Phone Number (you\'ll get matched by text on Friday!)': '2369781211'
-                }
-                matches.append((user, sophia))
+    # Group students by year group and mark paid users
+    group_1_2 = df[(df['Year Group'].str.contains('Years 1 & 2')) & (df['Paid'].str.lower() == 'yes')]
+    group_3_4_plus = df[(df['Year Group'].str.contains('Years 3 & 4+')) & (df['Paid'].str.lower() == 'yes')]
+
+    pairs = []
+
+    # Function to pair students based on gender preference within the same year group
+    def pair_students_by_gender(group):
+        paired = []
+        for index, user in group.iterrows():
+            if user['Matched'].lower() == 'yes':
+                continue
+
+            # Find potential matches based on gender preference
+            potential_matches = group[
+                (group['Gender'].str.lower() == user["Your match's gender"].strip().lower()) &
+                (group["Your match's gender"].str.lower() == user['Your gender'].strip().lower()) &
+                (group.index != index)
+            ]
+
+            if not potential_matches.empty:
+                match = potential_matches.iloc[0]
+                pairs.append((user, match))
                 df.at[index, 'Matched'] = 'Yes'
-                print(f"{user['First Name']} matched with Sophia.")
-            else:
-                print(f"No match found for {user['First Name']} this week. They will be re-evaluated next week.")
+                df.at[match.name, 'Matched'] = 'Yes'
+                paired.extend([user.name, match.name])
 
-    return matches, df
+        return paired
 
-# Function to perform random matching for everyone else
-def random_matching(df):
-    """
-    Matches all remaining unmatched users randomly.
-    
-    Args:
-        df (DataFrame): The DataFrame containing user data.
+    # Pair students by gender within the same year groups
+    paired_1_2 = pair_students_by_gender(group_1_2)
+    paired_3_4_plus = pair_students_by_gender(group_3_4_plus)
 
-    Returns:
-        List of tuples representing random matches and the updated DataFrame.
-    """
-    unmatched_users = df[df['Matched'].str.lower() != 'yes']
-    matches = []
+    # Handle leftover students after gender-specific matching
+    leftover_1_2 = group_1_2[~group_1_2.index.isin(paired_1_2)]
+    leftover_3_4_plus = group_3_4_plus[~group_3_4_plus.index.isin(paired_3_4_plus)]
 
-    while len(unmatched_users) > 1:
-        user1 = unmatched_users.iloc[0]
-        user2 = unmatched_users.iloc[1]
-        matches.append((user1, user2))
-        df.at[user1.name, 'Matched'] = 'Yes'
-        df.at[user2.name, 'Matched'] = 'Yes'
-        unmatched_users = unmatched_users.iloc[2:]
+    # Combine unmatched users and perform random matching across groups
+    unmatched = pd.concat([leftover_1_2, leftover_3_4_plus])
+    if not unmatched.empty:
+        while len(unmatched) > 1:
+            user1 = unmatched.iloc[0]
+            user2 = unmatched.iloc[1]
+            pairs.append((user1, user2))
+            df.at[user1.name, 'Matched'] = 'Yes'
+            df.at[user2.name, 'Matched'] = 'Yes'
+            unmatched = unmatched.iloc[2:]
 
-    return matches, df
-
-# Main function to run the matching process and send SMS
-if __name__ == "__main__":
-    # Connect to the Google Sheet and get data
-    df, sheet = connect_to_google_sheets()
-
-    # Step 1: Find gender-specific matches for paid users
-    gender_matches, df = find_gender_matches(df)
-
-    # Step 2: Perform random matching for everyone else
-    random_matches, df = random_matching(df)
-
-    # Combine all matches
-    all_matches = gender_matches + random_matches
+    # Match overflow users with Sophia if necessary
+    if not unmatched.empty:
+        sophia = {
+            'First Name': 'Sophia',
+            'Phone Number (you\'ll get matched by text on Friday!)': '2369781211',
+            'Year Group': 'N/A',
+            'Your gender': 'female',
+            'Matched': 'N/A'
+        }
+        pairs.append((unmatched.iloc[0], sophia))
+        df.at[unmatched.index[0], 'Matched'] = 'Yes'
+        print(f"Matching {unmatched.iloc[0]['First Name']} with Sophia.")
 
     # Prepare and send SMS messages
-    if all_matches:
-        messages = prepare_sms_messages(all_matches)
-        for message in messages:
-            send_sms(message)
+    messages = prepare_sms_messages(pairs)
+    for message in messages:
+        send_sms(message)
 
-        # Update the Google Sheet with the matched users
-        for match in all_matches:
-            user1 = match[0]
-            user2 = match[1]
-            sheet.update_cell(user1.name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-            if isinstance(user2, pd.Series):
-                sheet.update_cell(user2.name + 2, df.columns.get_loc("Matched") + 1, "Yes")
-        print("All matches have been updated and SMS messages sent.")
-    else:
-        print("No matches were found.")
+    # Mark matched students in the Google Sheet
+    for pair in pairs:
+        if isinstance(pair[1], pd.Series):  # This checks if the second person is a DataFrame row (not Sophia)
+            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+            sheet.update_cell(pair[1].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
+        else:  # If the second person is Sophia, update only the student
+            sheet.update_cell(pair[0].name + 2, df.columns.get_loc("Matched") + 1, "Yes")
