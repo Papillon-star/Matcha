@@ -3,7 +3,7 @@ name: Weekly SMS Job
 on:
   schedule:
     - cron: '0 18 * * 5'  # Every Friday at 18:00 UTC (10:00 AM PST)
-  workflow_dispatch:  # This allows you to manually trigger the workflow
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   run-script:
@@ -16,21 +16,14 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4  # Updated to version 4
       with:
-        python-version: '3.x'  # Replace '3.x' with your specific version if needed
+        python-version: '3.x'  # Replace '3.x' with your required Python version
 
     - name: Install dependencies
       run: |
         pip install --upgrade pip
         pip install gspread oauth2client telnyx pandas
-        pip install google-api-python-client  # Add this line
+        pip install google-api-python-client  # Add this line if not already present
 
     - name: Create credentials.json from secret
       run: |
-        echo "$GMAIL_CREDENTIALS_JSON" > credentials.json
-      env:
-        GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
-
-    - name: Run script
-      run: |
-        python send_sms.py
-
+        echo "$GMAILAPIS
