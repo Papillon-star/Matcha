@@ -71,8 +71,14 @@ def connect_to_google_sheets(sheet_name="Matcha Aug26 Responses"):
     client = gspread.authorize(creds)
     sheet = client.open(sheet_name).sheet1
 
-    # Load the sheet data into a DataFrame
-    data = sheet.get_all_records()
+    # Define expected headers to ensure consistency
+    expected_headers = [
+        "Timestamp", "First Name", "Gender", "Gender Preference",
+        "Phone Number (you'll get matched by text on Friday!)", "Paid", "Matched"
+    ]
+
+    # Load the sheet data into a DataFrame with expected headers
+    data = sheet.get_all_records(expected_headers=expected_headers)
     df = pd.DataFrame(data)
     return df, sheet
 
