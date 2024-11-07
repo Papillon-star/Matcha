@@ -24,11 +24,11 @@ def format_phone_number(phone_number, country_code="+1"):
 # Function to send SMS using Telnyx API
 #def send_sms(message):
     #try:
-        response = telnyx.Message.create(
-            from_=message['sender'],
-            to=message['recipient'],
-            text=message['content']
-        )
+    #    response = telnyx.Message.create(
+     #       from_=message['sender'],
+      #      to=message['recipient'],
+       #     text=message['content']
+       # )
       #  print(f"Message sent to {message['recipient']}")
      #   print(response)
      #   if 'to' in response and response['to'][0]['status']:
