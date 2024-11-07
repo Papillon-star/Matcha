@@ -71,7 +71,7 @@ sheet = client.open("Matcha Aug26 Responses").sheet1
 # Define unique expected headers
 expected_headers = [
     "Timestamp", "First Name", "Year Group", 
-    "Phone Number (you'll get matched by text on Friday!)", "Any Feedback?", "Matched"
+    "Phone Number (you'll get matched by text on Friday!)", "Any Feedback?", "Want to pick your match's gender?", "Any Feedback?", "What is your gender?", "Who do you want to match with?", "Please e-transfer $2 to sophia@matchaubc.co.site to make this happen", "Paid", "Matched"
 ]
 
 # Retrieve data using expected_headers
