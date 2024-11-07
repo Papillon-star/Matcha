@@ -8,7 +8,7 @@ import os
 import re
 
 # Set your Telnyx API key
-telnyx.api_key = ***REMOVED*** lol
+telnyx.api_key = "***REMOVED***"
 
 # Define your sender phone number
 sender_phone_number = "+12364848188"
@@ -22,25 +22,31 @@ def format_phone_number(phone_number, country_code="+1"):
     return phone_number
 
 # Function to send SMS using Telnyx API
-def send_sms(message):
-    try:
+#def send_sms(message):
+    #try:
         response = telnyx.Message.create(
             from_=message['sender'],
             to=message['recipient'],
             text=message['content']
         )
-        print(f"Message sent to {message['recipient']}")
-        print(response)
-        if 'to' in response and response['to'][0]['status']:
-            print(f"Message status: {response['to'][0]['status']}")
-            return response['to'][0]['status']
-        else:
-            print("Unexpected response structure, could not find status.")
-            return "unknown"
-    except telnyx.error.InvalidRequestError as e:
-        print(f"Failed to send message to {message['recipient']}: {e}")
-        print(f"Full details: {e.errors}")
-        return None
+      #  print(f"Message sent to {message['recipient']}")
+     #   print(response)
+     #   if 'to' in response and response['to'][0]['status']:
+    #        print(f"Message status: {response['to'][0]['status']}")
+     #       return response['to'][0]['status']
+     #   else:
+    #        print("Unexpected response structure, could not find status.")
+    #        return "unknown"
+  #  except telnyx.error.InvalidRequestError as e:
+    #    print(f"Failed to send message to {message['recipient']}: {e}")
+    #    print(f"Full details: {e.errors}")
+    #    return None
+
+#test version below for no real sms sending 
+def send_sms(message):
+    # Simulate sending SMS without actual API call
+    print(f"Simulated sending SMS to {message['recipient']}")
+    return "delivered"  # Simulate a successful status
 
 # Function to prepare SMS messages
 def prepare_sms_messages(pairs):
