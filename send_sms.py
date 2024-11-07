@@ -8,7 +8,7 @@ import os
 import re
 
 # Set your Telnyx API key
-telnyx.api_key = "***REMOVED***"
+telnyx.api_key = ***REMOVED*** lol
 
 # Define your sender phone number
 sender_phone_number = "+12364848188"
