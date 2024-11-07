@@ -24,11 +24,13 @@ jobs:
         pip install gspread oauth2client telnyx pandas
         pip install google-api-python-client  # Add this line
 
+    - name: Create credentials.json from secret
+      run: |
+        echo "$GMAIL_CREDENTIALS_JSON" > credentials.json
+      env:
+        GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
+
     - name: Run script
       run: |
         python send_sms.py
 
-
-    - name: Run script
-      run: |
-        python send_sms.py
