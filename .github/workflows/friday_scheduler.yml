@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4  # Updated to version 4
       with:
-        python-version: '3.x'  # Replace '3.x' with your required Python version
+        python-version: '3.x'  # Replace '3.x' with your specific version if needed
 
     - name: Install dependencies
       run: |
@@ -26,4 +26,10 @@ jobs:
 
     - name: Create credentials.json from secret
       run: |
-        echo "$GMAILAPIS
+        printf '%s' "$GMAILAPISECRET" > credentials.json
+      env:
+        GMAILAPISECRET: ${{ secrets.GMAILAPISECRET }}
+
+    - name: Run script
+      run: |
+        python send_sms.py
