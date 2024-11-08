@@ -177,7 +177,6 @@ else:
       return paired
 
 
-
     # Pair students by gender within the paid groups
     paired_1_2 = pair_students_by_gender(group_1_2_paid)
     paired_3_4_plus = pair_students_by_gender(group_3_4_plus_paid)
