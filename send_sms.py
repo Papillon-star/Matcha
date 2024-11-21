@@ -60,7 +60,8 @@ def prepare_sms_messages(pairs):
           'content': 
           (
           f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number'])}.\n\n"
-          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
+          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
+          f"Check out CreaCards to get through exam season: https://bit.ly/CreaCards.'.\n\n"
           f"Meet someone new by filling out the Matcha form again: {form_link} :)"
           )
       }
@@ -70,7 +71,8 @@ def prepare_sms_messages(pairs):
           'content': 
           (
           f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number'])}.\n\n"
-          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask staff for the 'Matcha Promo'.\n\n"
+          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
+          f"Check out CreaCards to get through exam season: https://bit.ly/CreaCards.'.\n\n"
           f"Meet someone new by filling out the Matcha form again: {form_link} :)"
           )
       }
