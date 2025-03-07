@@ -54,38 +54,15 @@ def prepare_sms_messages(pairs):
       pair[0]['Phone Number'] = pair[0]["Phone Number (you'll get matched by text on Friday!)"]
 
       
-      message_1 = {
-          'sender': sender_phone_number,
-          'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
-          'content': 
-          (
-          f" Hey {pair[0]['First Name']}🏃‍♂️🍵, you're matched with {pair[1]['First Name']}! 🎉 Text them here: {format_phone_number(pair[1]['Phone Number'])}📞.\n\n"
-          f"Tonight, through games, drinks, or just chatting- we hope you find your next running buddy.\n\n"
-          f"Fill out our feedback form after to let us know your thoughts! https://forms.gle/8Je5rPGEdH5u5MUz8.\n\n"
-          f"Happy Matching! 😊"
-          )
-      }
-      message_2 = {
-          'sender': sender_phone_number,
-          'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
-          'content': 
-          (
-          f"Hey {pair[1]['First Name']}🏃‍♂️🍵, you're matched with {pair[0]['First Name']}! 🎉 Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
-          f"Tonight, through games, drinks, or just chatting- we hope you find your next running buddy.\n\n"
-          f"Fill out our feedback form after to let us know your thoughts! https://forms.gle/8Je5rPGEdH5u5MUz8.\n\n"
-          f"Happy Matching! 😊"
-          )
-      }
-
       # message_1 = {
       #     'sender': sender_phone_number,
       #     'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
       #     'content': 
       #     (
-      #     f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number'])}.\n\n"
-      #     f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
-      #     f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
-      #     f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+      #     f" Hey {pair[0]['First Name']}🏃‍♂️🍵, you're matched with {pair[1]['First Name']}! 🎉 Text them here: {format_phone_number(pair[1]['Phone Number'])}📞.\n\n"
+      #     f"Tonight, through games, drinks, or just chatting- we hope you find your next running buddy.\n\n"
+      #     f"Fill out our feedback form after to let us know your thoughts! https://forms.gle/8Je5rPGEdH5u5MUz8.\n\n"
+      #     f"Happy Matching! 😊"
       #     )
       # }
       # message_2 = {
@@ -93,12 +70,35 @@ def prepare_sms_messages(pairs):
       #     'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
       #     'content': 
       #     (
-      #     f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number'])}.\n\n"
-      #     f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
-      #     f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
-      #     f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+      #     f"Hey {pair[1]['First Name']}🏃‍♂️🍵, you're matched with {pair[0]['First Name']}! 🎉 Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
+      #     f"Tonight, through games, drinks, or just chatting- we hope you find your next running buddy.\n\n"
+      #     f"Fill out our feedback form after to let us know your thoughts! https://forms.gle/8Je5rPGEdH5u5MUz8.\n\n"
+      #     f"Happy Matching! 😊"
       #     )
       # }
+
+      message_1 = {
+          'sender': sender_phone_number,
+          'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
+          'content': 
+          (
+          f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number'])}.\n\n"
+          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
+          f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
+          f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+          )
+      }
+      message_2 = {
+          'sender': sender_phone_number,
+          'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
+          'content': 
+          (
+          f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number'])}.\n\n"
+          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
+          f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
+          f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+          )
+      }
 
         
       messages.extend([message_1, message_2])
