@@ -8,7 +8,7 @@ import re
 #TODO SOPHIA EVERY TIME YOU UPDATE FORM/SHEET
 #ALARUM
 #ALARUM
-matched_col_num = 17 #UPDATE THIS MANUALLY
+matched_col_num = 16 #UPDATE THIS MANUALLY
 
 # Set your Telnyx API key
 telnyx.api_key = "***REMOVED***"
