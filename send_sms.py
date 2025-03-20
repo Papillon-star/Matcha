@@ -96,8 +96,8 @@ def prepare_sms_messages(pairs):
           'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
-          f"Hey {pair[0]['First Name']}! 🎉, \n\n"
-          f"You've been matched with {pair[1]['First Name']}! 💕. Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
+          f"Hey {pair[1]['First Name']}! 🎉, \n\n"
+          f"You've been matched with {pair[0]['First Name']}! 💕. Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
           f"Use ‘Matcha Promo’ for a free treat with purchase when you bring your match to Great Dane Coffee. ☕️🐾 .\n\n"
           f"Fill out our feedback form after the meeting to let us know your thoughts! https://docs.google.com/forms/d/e/1FAIpQLSe6wEB-DyLUb4LYUIvEFSFDvRb05bAv15YvP4xjAY_a3aVdJQ/viewform\n\n"
           f"Happy Matching! 🍵😊 \n\n"
