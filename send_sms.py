@@ -82,21 +82,27 @@ def prepare_sms_messages(pairs):
           'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
-          f"{pair[0]['First Name']}, you're matched with {pair[1]['First Name']}! Text them to meet this week: {format_phone_number(pair[1]['Phone Number'])}.\n\n"
-          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
-          f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
-          f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+          f"Hey {pair[0]['First Name']}! 🎉, \n\n"
+          f"You've been matched with {pair[1]['First Name']}! 💕. Text them here: {format_phone_number(pair[1]['Phone Number'])}📞.\n\n"
+          f"Use ‘Matcha Promo’ for a free treat with purchase when you bring your match to Great Dane Coffee. ☕️🐾 .\n\n"
+          f"Fill out our feedback form after the meeting to let us know your thoughts! https://docs.google.com/forms/d/e/1FAIpQLSe6wEB-DyLUb4LYUIvEFSFDvRb05bAv15YvP4xjAY_a3aVdJQ/viewform\n\n"
+          f"Happy Matching! 🍵😊 \n\n"
+          f"Need study help? Check out CreaCards! 📚 https://www.creacards.ca/user-signup?refer=07c71d24d-c424a3427453c5e37670350 \n\n"
+          f"Want to meet someone new? Fill out the Matcha form again! 😊 https://forms.gle/r3XKxWTErddwKVWq9"
           )
       }
       message_2 = {
           'sender': sender_phone_number,
-          'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
+          'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
-          f"{pair[1]['First Name']}, you're matched with {pair[0]['First Name']}! Text them to meet this week: {format_phone_number(pair[0]['Phone Number'])}.\n\n"
-          f"Bring your match to Great Dane on campus for a FREE pastry with purchase! Just ask for the 'Matcha Promo'.\n\n"
-          f"Check out CreaCards to get through exam season: https://www.creacards.ca/user-signup?refer=07c71d24dc424a3427453c5e37670350.\n\n"
-          f"Meet someone new by filling out the Matcha form again: {form_link} :)"
+          f"Hey {pair[0]['First Name']}! 🎉, \n\n"
+          f"You've been matched with {pair[1]['First Name']}! 💕. Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
+          f"Use ‘Matcha Promo’ for a free treat with purchase when you bring your match to Great Dane Coffee. ☕️🐾 .\n\n"
+          f"Fill out our feedback form after the meeting to let us know your thoughts! https://docs.google.com/forms/d/e/1FAIpQLSe6wEB-DyLUb4LYUIvEFSFDvRb05bAv15YvP4xjAY_a3aVdJQ/viewform\n\n"
+          f"Happy Matching! 🍵😊 \n\n"
+          f"Need study help? Check out CreaCards! 📚 https://www.creacards.ca/user-signup?refer=07c71d24d-c424a3427453c5e37670350 \n\n"
+          f"Want to meet someone new? Fill out the Matcha form again! 😊 https://forms.gle/r3XKxWTErddwKVWq9"
           )
       }
 
