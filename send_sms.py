@@ -93,7 +93,7 @@ def prepare_sms_messages(pairs):
       }
       message_2 = {
           'sender': sender_phone_number,
-          'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
+          'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
           f"Hey {pair[1]['First Name']}! 🎉, \n\n"
