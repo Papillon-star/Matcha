@@ -11,7 +11,7 @@ import re
 matched_col_num = 18 #UPDATE THIS MANUALLY
 
 # Set your Telnyx API key
-telnyx.api_key = "***REMOVED***"
+telnyx.api_key = "KEY0191ABA30D7B395C50FA4DDEC771D957_k3s3A9mScU3U1eBPmVv85t"
 
 # Define your sender phone number
 sender_phone_number = "+12364848188"
@@ -82,7 +82,7 @@ def prepare_sms_messages(pairs):
           'recipient': format_phone_number(pair[0]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
-          f"Hey {pair[0]['First Name']}! 🎉, \n\n"
+          f"Hey {pair[0]['First Name']}, this is Matcha🍵🎉! \n\n"
           f"You've been matched with {pair[1]['First Name']}! 💕. Text them here: {format_phone_number(pair[1]['Phone Number'])}📞.\n\n"
           f"Use ‘Matcha Promo’ for a free treat with purchase when you bring your match to Great Dane Coffee. ☕️🐾 .\n\n"
           f"Fill out our feedback form after the meeting to let us know your thoughts! https://docs.google.com/forms/d/e/1FAIpQLSe6wEB-DyLUb4LYUIvEFSFDvRb05bAv15YvP4xjAY_a3aVdJQ/viewform\n\n"
@@ -96,7 +96,7 @@ def prepare_sms_messages(pairs):
           'recipient': format_phone_number(pair[1]["Phone Number (you'll get matched by text on Friday!)"]),
           'content': 
           (
-          f"Hey {pair[1]['First Name']}! 🎉, \n\n"
+          f"Hey {pair[1]['First Name']}, this is Matcha🍵🎉! \n\n"
           f"You've been matched with {pair[0]['First Name']}! 💕. Text them here: {format_phone_number(pair[0]['Phone Number'])}📞.\n\n"
           f"Use ‘Matcha Promo’ for a free treat with purchase when you bring your match to Great Dane Coffee. ☕️🐾 .\n\n"
           f"Fill out our feedback form after the meeting to let us know your thoughts! https://docs.google.com/forms/d/e/1FAIpQLSe6wEB-DyLUb4LYUIvEFSFDvRb05bAv15YvP4xjAY_a3aVdJQ/viewform\n\n"
