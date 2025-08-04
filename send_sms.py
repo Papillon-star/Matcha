@@ -10,8 +10,9 @@ import re
 #ALARUM
 matched_col_num = 18 #UPDATE THIS MANUALLY
 
-# Set your Telnyx API key
-telnyx.api_key = "KEY0191ABA30D7B395C50FA4DDEC771D957_k3s3A9mScU3U1eBPmVv85t"
+# Set your Telnyx API key from environment variable
+import os
+telnyx.api_key = os.getenv('TELNYX_API_KEY', 'your-telnyx-api-key-here')
 
 # Define your sender phone number
 sender_phone_number = "+12364848188"
@@ -119,7 +120,11 @@ def print_group_names(group, group_name):
 
 # Authenticate and connect to Google Sheets
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('config/matcha-aug26-4ff2f9ef6f54.json', scope)
+
+# Use environment variable for credentials file path, with fallback for development
+import os
+credentials_file = os.getenv('GOOGLE_CREDENTIALS_FILE', 'config/service-account.json')
+creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
 client = gspread.authorize(creds)
 sheet = client.open("Matcha Aug26 Responses").sheet1
 
